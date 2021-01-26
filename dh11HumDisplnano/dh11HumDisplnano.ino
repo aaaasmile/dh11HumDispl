@@ -105,10 +105,10 @@ void loop()
 
   if (g_prevTemp != currTemp || g_prevHum != currHumidity)
   {
-    #ifdef DEBUG
+#ifdef DEBUG
     Serial.println("Diplay on because change temp or hum");
-    #endif
-    lcd.backlight();
+#endif
+    turnONDisplay();
     lcd.setCursor(0, 0);
     lcd.print(g_strLine1);
     lcd.setCursor(0, 1);
@@ -120,8 +120,7 @@ void loop()
   {
     if (g_lightloop == turnOffLoop)
     {
-      g_lightloop++;
-      lcd.noBacklight();
+      turnOFFDisplay();
 #ifdef DEBUG
       Serial.print(g_lightloop);
       Serial.print(" turnOffLoop ");
@@ -146,4 +145,16 @@ void loop()
 
   // DHT11 sampling rate is 1HZ.
   delay(g_defDelay);
+}
+
+void turnONDisplay()
+{
+  lcd.backlight();
+  g_lightloop = 0;
+}
+
+void turnOFFDisplay()
+{
+  lcd.noBacklight();
+  g_lightloop++;
 }
