@@ -16,6 +16,9 @@ GND ----- GND
 VCC ------ 5V
 SDA ------ A4
 SCL ------ A5
+Nessuna sorpresa sui pin A4 e A5, essi sono i due pin predisposti per 
+l'interfaccia I2C. I pin A sono, di solito, gli ingressi analogici.
+
 
 Button
 GND ------ D9   (collegamento diretto senza resistenza)
