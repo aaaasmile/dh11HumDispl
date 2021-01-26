@@ -2,7 +2,7 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
-LiquidCrystal_I2C lcd(0x27,16,2); // set the LCD address to 0x27 for a 16 chars and 2 line display
+LiquidCrystal_I2C lcd(0x27, 16, 2); // set the LCD address to 0x27 for a 16 chars and 2 line display
 
 // codice che ho preso dal tutorial lavfin
 // che utilizza la libreria simpledgt11. La quale ho installato unsando "Manage Libraries"
@@ -12,8 +12,7 @@ LiquidCrystal_I2C lcd(0x27,16,2); // set the LCD address to 0x27 for a 16 chars 
 // 2 - Vcc
 // 3 - Data
 
-
-// for DHT11, 
+// for DHT11,
 //      VCC: 5V or 3V
 //      GND: GND
 //      DATA: 2
@@ -32,98 +31,119 @@ int g_readLoop = 0;
 const int g_defDelay = 100;
 const int sec_with_light = 5;
 const int sec_between_read = 3;
-const int turnOffLoop = sec_with_light * 1000 / g_defDelay; 
-const int readLoop = sec_between_read  * 1000 / g_defDelay;
+const int turnOffLoop = sec_with_light * 1000 / g_defDelay;
+const int readLoop = sec_between_read * 1000 / g_defDelay;
 
 #define DEBUG
 
-void setup() {
+void setup()
+{
   lcd.init();
-  
+
   pinMode(buttonApin, INPUT_PULLUP);
 
-  #ifdef DEBUG
+#ifdef DEBUG
   Serial.begin(9600);
-  #endif
+#endif
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  #ifdef DEBUG
-  Serial.println("=================================");
-  Serial.println("Sample DHT11...");
-  #endif
+void loop()
+{
   int currTemp = g_prevTemp;
   int currHumidity = g_prevHum;
 
-  if (g_readLoop >= readLoop){
+  if (g_readLoop >= readLoop)
+  {
+#ifdef DEBUG
+    Serial.println("=================================");
+    Serial.println("Sample DHT11...");
+#endif
     g_readLoop = 0;
     // read with raw sample data.
     byte temperature = 0;
     byte humidity = 0;
     byte data[40] = {0};
-    if (dht11.read(pinDHT11, &temperature, &humidity, data)) {
-      #ifdef DEBUG
+    if (dht11.read(pinDHT11, &temperature, &humidity, data))
+    {
+#ifdef DEBUG
       Serial.print("Read DHT11 failed\n");
-      #endif
+#endif
       delay(g_defDelay);
-      g_readLoop ++;
+      g_readLoop++;
       return;
     }
     currTemp = (int)temperature;
     currHumidity = (int)humidity;
 
-    #ifdef DEBUG
+#ifdef DEBUG
     Serial.print("Read OK, Sample RAW Bits: ");
-    for (int i = 0; i < 40; i++) {
+    for (int i = 0; i < 40; i++)
+    {
       Serial.print((int)data[i]);
-      if (i > 0 && ((i + 1) % 4) == 0) {
+      if (i > 0 && ((i + 1) % 4) == 0)
+      {
         Serial.print(' ');
       }
     }
     Serial.println("");
     Serial.print("Sample OK: ");
-    Serial.print(currTemp); Serial.print(" *C, ");
-    Serial.print(currHumidity); Serial.println(" %");
-    #endif
-    
+    Serial.print(currTemp);
+    Serial.print(" *C, ");
+    Serial.print(currHumidity);
+    Serial.println(" %");
+#endif
+
     snprintf(buff1, sizeof(buff1), "%d C Temperature", currTemp);
     g_strLine1 = buff1;
     snprintf(buff2, sizeof(buff2), "%d %% Humidity", currHumidity);
     g_strLine2 = buff2;
-  }else{
+  }
+  else
+  {
     g_readLoop++;
   }
-  
-  if (g_prevTemp != currTemp || g_prevHum != currHumidity){
+
+  if (g_prevTemp != currTemp || g_prevHum != currHumidity)
+  {
+    #ifdef DEBUG
+    Serial.println("Diplay on because change temp or hum");
+    #endif
     lcd.backlight();
-    lcd.setCursor(0,0);
+    lcd.setCursor(0, 0);
     lcd.print(g_strLine1);
-    lcd.setCursor(0,1);
+    lcd.setCursor(0, 1);
     lcd.print(g_strLine2);
     g_prevTemp = currTemp;
     g_prevHum = currHumidity;
-  }else{
-    if (g_lightloop = turnOffLoop){
-      g_lightloop ++;
+  }
+  else
+  {
+    if (g_lightloop == turnOffLoop)
+    {
+      g_lightloop++;
       lcd.noBacklight();
-      #ifdef DEBUG
+#ifdef DEBUG
+      Serial.print(g_lightloop);
+      Serial.print(" turnOffLoop ");
+      Serial.print(turnOffLoop);
       Serial.println("Turn off display");
-      #endif
-    }else if (g_lightloop < turnOffLoop){
-      g_lightloop ++;
+#endif
     }
-    
-    if (digitalRead(buttonApin) == LOW){
-      #ifdef DEBUG
-      Serial.println("Turn on light");
-      #endif
-      lcd.backlight();
-      g_lightloop = 0;
+    else if (g_lightloop < turnOffLoop)
+    {
+      g_lightloop++;
     }
+
+    //     if (digitalRead(buttonApin) == LOW)
+    //     {
+    // #ifdef DEBUG
+    //       Serial.println("Turn on light");
+    // #endif
+    //       lcd.backlight();
+    //       g_lightloop = 0;
+    //     }
   }
 
   // DHT11 sampling rate is 1HZ.
   delay(g_defDelay);
-
 }
