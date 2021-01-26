@@ -27,31 +27,37 @@ char buff2[32];
 int prevTemp;
 int prevHum;
 
+#define DEBUG
+
 void setup() {
   lcd.init();
-  // Print a message to the LCD.
-  
-  // put your setup code here, to run once:
+  #ifdef DEBUG
   Serial.begin(9600);
+  #endif
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  #ifdef DEBUG
   Serial.println("=================================");
   Serial.println("Sample DHT11...");
+  #endif
   
   // read with raw sample data.
   byte temperature = 0;
   byte humidity = 0;
   byte data[40] = {0};
   if (dht11.read(pinDHT11, &temperature, &humidity, data)) {
+    #ifdef DEBUG
     Serial.print("Read DHT11 failed\n");
+    #endif
     delay(1000);
     return;
   }
   int currTemp = (int)temperature;
   int currHumidity = (int)humidity;
-  
+
+  #ifdef DEBUG
   Serial.print("Read OK, Sample RAW Bits: ");
   for (int i = 0; i < 40; i++) {
     Serial.print((int)data[i]);
@@ -60,15 +66,17 @@ void loop() {
     }
   }
   Serial.println("");
-  
   Serial.print("Sample OK: ");
+  Serial.print(currTemp); Serial.print(" *C, ");
+  Serial.print(currHumidity); Serial.println(" %");
+  #endif
+  
+  
   snprintf(buff1, sizeof(buff1), "%d C Temperature", currTemp);
   g_strLine1 = buff1;
   snprintf(buff2, sizeof(buff2), "%d %% Humidity", currHumidity);
   g_strLine2 = buff2;
   
-  Serial.print(currTemp); Serial.print(" *C, ");
-  Serial.print(currHumidity); Serial.println(" %");
   if (prevTemp != currTemp || prevHum != currHumidity){
     lcd.backlight();
     lcd.setCursor(0,0);
@@ -79,7 +87,9 @@ void loop() {
     prevHum = currHumidity;
   }else{
     lcd.noBacklight();
+    #ifdef DEBUG
     Serial.println("No backlight");
+    #endif
   }
  
   // DHT11 sampling rate is 1HZ.

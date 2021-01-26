@@ -1,0 +1,23 @@
+# Dh11HumDispl
+
+Semplice applicazione per misurare la temperatura e l'umidità con Arduino Nano.
+Il sensore dell'umidita e il DH11 che usa la libreria SimpleDHT. 
+Il display utilizzato e I2C LCD 1602 a due righe. Per il display ho 
+installato la libreria LiquidCrystal_I2C
+
+Collegamento pin:
+Sensore:
+GND ---- GND
+VCC ---- 5V
+Data --- D2
+
+Display
+GND ----- GND
+VCC ------ 5V
+SDA ------ A4
+SCL ------ A5
+
+## Problemi
+Il collegamento del sensore va fatto come descritto nel tuttoria.
+Sulla scheda, però, Vcc e data sono scambiati.
+Di tanto in tanto il sensore fornisce delle letture errate.
