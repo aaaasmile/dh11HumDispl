@@ -28,6 +28,7 @@ int g_prevTemp = 0;
 int g_prevHum = 0;
 int g_lightloop = 0;
 int g_readLoop = 0;
+bool g_wasAfterReset = true;
 const int g_defDelay = 100;
 const int sec_with_light = 5;
 const int sec_between_read = 3;
@@ -80,7 +81,11 @@ void loop()
     snprintf(buff2, sizeof(buff2), "%d %% Humidity", currHumidity);
     g_strLine2 = buff2;
 
-    turnONDisplay();
+    if (g_wasAfterReset)
+    {
+      turnONDisplay();
+      g_wasAfterReset = false;
+    }
 
     lcd.setCursor(0, 0);
     lcd.print(g_strLine1);
