@@ -106,9 +106,10 @@ void loop()
   if (g_prevTemp != currTemp || g_prevHum != currHumidity)
   {
 #ifdef DEBUG
-    Serial.println("Diplay on because change temp or hum");
+    Serial.println("Tmperature or humidiy has been changed");
 #endif
     turnONDisplay();
+
     lcd.setCursor(0, 0);
     lcd.print(g_strLine1);
     lcd.setCursor(0, 1);
@@ -121,26 +122,19 @@ void loop()
     if (g_lightloop == turnOffLoop)
     {
       turnOFFDisplay();
-#ifdef DEBUG
-      Serial.print(g_lightloop);
-      Serial.print(" turnOffLoop ");
-      Serial.print(turnOffLoop);
-      Serial.println("Turn off display");
-#endif
     }
     else if (g_lightloop < turnOffLoop)
     {
       g_lightloop++;
     }
 
-    //     if (digitalRead(buttonApin) == LOW)
-    //     {
-    // #ifdef DEBUG
-    //       Serial.println("Turn on light");
-    // #endif
-    //       lcd.backlight();
-    //       g_lightloop = 0;
-    //     }
+    if (digitalRead(buttonApin) == LOW)
+    {
+#ifdef DEBUG
+      Serial.println("Button pressed");
+#endif
+      turnONDisplay();
+    }
   }
 
   // DHT11 sampling rate is 1HZ.
@@ -151,10 +145,19 @@ void turnONDisplay()
 {
   lcd.backlight();
   g_lightloop = 0;
+#ifdef DEBUG
+  Serial.println("Turn on light");
+#endif
 }
 
 void turnOFFDisplay()
 {
   lcd.noBacklight();
   g_lightloop++;
+#ifdef DEBUG
+  Serial.print(g_lightloop);
+  Serial.print(" turnOffLoop ");
+  Serial.print(turnOffLoop);
+  Serial.println("Turn off display");
+#endif
 }
