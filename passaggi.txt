@@ -17,6 +17,11 @@ VCC ------ 5V
 SDA ------ A4
 SCL ------ A5
 
+Button
+GND ------ D9
+Il bottone vien usato in pullup, quindi high di default che va a massa
+quando è collegato.
+
 ## Problemi
 Il collegamento del sensore va fatto come descritto nel tuttoria.
 Sulla scheda, però, Vcc e data sono scambiati.
