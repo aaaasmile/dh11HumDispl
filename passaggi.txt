@@ -18,11 +18,14 @@ SDA ------ A4
 SCL ------ A5
 
 Button
-GND ------ D9
-Il bottone vien usato in pullup, quindi high di default che va a massa
-quando è collegato.
+GND ------ D9   (collegamento diretto senza resistenza)
+
+Il bottone viene usato in pullup, quindi high di default, che poi va a massa
+quando è collegato. Il bottone a 4 pin è collegato in serie sulla parte
+sinistra e destra. Quindi per interrompere il circuito fino a quando
+si preme il tasto, bisgna collegare il bottone in diagonale.
 
 ## Problemi
-Il collegamento del sensore va fatto come descritto nel tuttoria.
-Sulla scheda, però, Vcc e data sono scambiati.
+Il collegamento del sensore va fatto come descritto nel tuttorial.
+Sulla scheda, però, i pin Vcc e Data sono scambiati.
 Di tanto in tanto il sensore fornisce delle letture errate.

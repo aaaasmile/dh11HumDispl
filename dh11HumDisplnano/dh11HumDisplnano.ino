@@ -34,7 +34,7 @@ const int sec_between_read = 3;
 const int turnOffLoop = sec_with_light * 1000 / g_defDelay;
 const int readLoop = sec_between_read * 1000 / g_defDelay;
 
-#define DEBUG
+//#define DEBUG
 
 void setup()
 {
@@ -54,16 +54,8 @@ void loop()
 
   if (g_readLoop >= readLoop)
   {
-#ifdef DEBUG
-    Serial.println("=================================");
-    Serial.println("Sample DHT11...");
-#endif
     g_readLoop = 0;
-    // read with raw sample data.
-    byte temperature = 0;
-    byte humidity = 0;
-    byte data[40] = {0};
-    if (dht11.read(pinDHT11, &temperature, &humidity, data))
+    if (!readDh11Sensor(currTemp, currHumidity))
     {
 #ifdef DEBUG
       Serial.print("Read DHT11 failed\n");
@@ -72,31 +64,6 @@ void loop()
       g_readLoop++;
       return;
     }
-    currTemp = (int)temperature;
-    currHumidity = (int)humidity;
-
-#ifdef DEBUG
-    Serial.print("Read OK, Sample RAW Bits: ");
-    for (int i = 0; i < 40; i++)
-    {
-      Serial.print((int)data[i]);
-      if (i > 0 && ((i + 1) % 4) == 0)
-      {
-        Serial.print(' ');
-      }
-    }
-    Serial.println("");
-    Serial.print("Sample OK: ");
-    Serial.print(currTemp);
-    Serial.print(" *C, ");
-    Serial.print(currHumidity);
-    Serial.println(" %");
-#endif
-
-    snprintf(buff1, sizeof(buff1), "%d C Temperature", currTemp);
-    g_strLine1 = buff1;
-    snprintf(buff2, sizeof(buff2), "%d %% Humidity", currHumidity);
-    g_strLine2 = buff2;
   }
   else
   {
@@ -108,6 +75,11 @@ void loop()
 #ifdef DEBUG
     Serial.println("Tmperature or humidiy has been changed");
 #endif
+    snprintf(buff1, sizeof(buff1), "%d C Temperature", currTemp);
+    g_strLine1 = buff1;
+    snprintf(buff2, sizeof(buff2), "%d %% Humidity", currHumidity);
+    g_strLine2 = buff2;
+
     turnONDisplay();
 
     lcd.setCursor(0, 0);
@@ -160,4 +132,41 @@ void turnOFFDisplay()
   Serial.print(turnOffLoop);
   Serial.println("Turn off display");
 #endif
+}
+
+bool readDh11Sensor(int &currTemp, int &currHumidity)
+{
+#ifdef DEBUG
+  Serial.println("=================================");
+  Serial.println("Sample DHT11...");
+#endif
+  // read with raw sample data.
+  byte temperature = 0;
+  byte humidity = 0;
+  byte data[40] = {0};
+  if (dht11.read(pinDHT11, &temperature, &humidity, data))
+  {
+    return false;
+  }
+  currTemp = (int)temperature;
+  currHumidity = (int)humidity;
+
+#ifdef DEBUG
+  Serial.print("Read OK, Sample RAW Bits: ");
+  for (int i = 0; i < 40; i++)
+  {
+    Serial.print((int)data[i]);
+    if (i > 0 && ((i + 1) % 4) == 0)
+    {
+      Serial.print(' ');
+    }
+  }
+  Serial.println("");
+  Serial.print("Sample OK: ");
+  Serial.print(currTemp);
+  Serial.print(" *C, ");
+  Serial.print(currHumidity);
+  Serial.println(" %");
+#endif
+  return true;
 }
